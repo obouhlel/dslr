@@ -61,18 +61,14 @@ def save_statistics_to_csv(stats: Dict[str, Dict[str, float]], file_path: str):
     fields_top = list(stats.keys())
     fields_left = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
 
-    # Préparer les données pour l'écriture dans le CSV
     data_to_write = []
     for field in fields_top:
         row = [field] + [stats[field][stat] for stat in fields_left]
         data_to_write.append(row)
 
-    # Écrire les données dans un fichier CSV
     with open(file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
-        # Écrire l'en-tête
         writer.writerow(['Field'] + fields_left)
-        # Écrire les données
         writer.writerows(data_to_write)
 
 def describe():
