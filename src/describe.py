@@ -1,19 +1,47 @@
 import sys
+import csv
+from typing import List
+from object.Student import Student
 
-# First of all, take a look at the available data. look in what format it is presented, if
-# there are various types of data, the different ranges, and so on. It is important to make
-# an idea of your raw material before starting. The more you work on data - the more you
-# develop an intuition about how you will be able to use it.
-# In this part, Professor McGonagall asks you to produce a program called describe.[extension].
-# This program will take a dataset as a parameter.
+def load_students_from_csv(file_path) -> List[Student]:
+    students = []
+    with open(file_path, mode='r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            for key in row:
+                if key not in ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']:
+                    row[key] = float(row[key]) if row[key] else None
+
+            student = Student(
+                index=row['Index'],
+                house=row['Hogwarts House'],
+                first_name=row['First Name'],
+                last_name=row['Last Name'],
+                birthday=row['Birthday'],
+                best_hand=row['Best Hand'],
+                arithmancy=row['Arithmancy'],
+                astronomy=row['Astronomy'],
+                herbology=row['Herbology'],
+                defense=row['Defense Against the Dark Arts'],
+                divination=row['Divination'],
+                muggle_studies=row['Muggle Studies'],
+                ancient_runes=row['Ancient Runes'],
+                history_of_magic=row['History of Magic'],
+                transfiguration=row['Transfiguration'],
+                potions=row['Potions'],
+                care_of_magical_creatures=row['Care of Magical Creatures'],
+                charms=row['Charms'],
+                flying=row['Flying']
+            )
+            students.append(student)
+    return students
 
 def describe():
     if len(sys.argv) != 2:
         print("Usage: need to give a dataset")
         sys.exit(1)
-
     file_name = sys.argv[1]
-    print(f"Dataset file: {file_name}")
+    students = load_students_from_csv(file_path=file_name)
 
 if __name__ == "__main__":
     describe()
