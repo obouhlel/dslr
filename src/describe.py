@@ -1,11 +1,8 @@
 import sys
 import csv
-import numpy as np
-from typing import List
-from object.stats import Stats
-from object.student import Student
+from typing import List, Dict
 
-def load_students_from_csv(file_path) -> List[Student]:
+def load_students_from_csv(file_path) -> List[Dict[str, any]]:
     students = []
     with open(file_path, mode='r', newline='') as file:
         reader = csv.DictReader(file)
@@ -13,74 +10,69 @@ def load_students_from_csv(file_path) -> List[Student]:
             for key in row:
                 if key not in ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']:
                     row[key] = float(row[key]) if row[key] else None
-
-            student = Student(
-                index=row['Index'],
-                house=row['Hogwarts House'],
-                first_name=row['First Name'],
-                last_name=row['Last Name'],
-                birthday=row['Birthday'],
-                best_hand=row['Best Hand'],
-                arithmancy=row['Arithmancy'],
-                astronomy=row['Astronomy'],
-                herbology=row['Herbology'],
-                defense=row['Defense Against the Dark Arts'],
-                divination=row['Divination'],
-                muggle_studies=row['Muggle Studies'],
-                ancient_runes=row['Ancient Runes'],
-                history_of_magic=row['History of Magic'],
-                transfiguration=row['Transfiguration'],
-                potions=row['Potions'],
-                care_of_magical_creatures=row['Care of Magical Creatures'],
-                charms=row['Charms'],
-                flying=row['Flying']
-            )
-            students.append(student)
+            students.append(row)
     return students
 
-def calculate_statistics(students: List[Student]) -> dict:
+def calculate_statistics(students: List[Dict[str, any]]) -> Dict[str, Dict[str, float]]:
     fields = [
-        'arithmancy', 'astronomy', 'herbology', 'defense', 'divination',
-        'muggle_studies', 'ancient_runes', 'history_of_magic', 'transfiguration',
-        'potions', 'care_of_magical_creatures', 'charms', 'flying'
-    ]
-
-    stats = {}
-    for field in fields:
-        values = [getattr(student, field) for student in students if getattr(student, field) is not None]
-        if values:
-            stats[field] = {
-                'Count': len(values),
-                'Mean': np.mean(values),
-                'Std': np.std(values),
-                'Min': np.min(values),
-                '25%': np.percentile(values, 25),
-                '50%': np.percentile(values, 50),
-                '75%': np.percentile(values, 75),
-                'Max': np.max(values),
-            }
-    return stats
-
-def save_statistics_to_csv(stats: dict, file_path: str):
-    fields_top = [
-        'Arithmancy', 'Astronomy', 'Herbology', 'Defense', 'Divination',
+        'Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination',
         'Muggle Studies', 'Ancient Runes', 'History of Magic', 'Transfiguration',
         'Potions', 'Care of Magical Creatures', 'Charms', 'Flying'
     ]
-    fields_left = [
-        'Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max'
-    ]
 
+    stats = {}
+
+    for field in fields:
+        values = [student[field] for student in students if student[field] is not None]
+        if values:
+            values.sort()
+
+            count = len(values)
+            mean = sum(values) / count
+
+            variance = sum((x - mean) ** 2 for x in values) / count
+            std = variance ** 0.5
+
+            min_val = values[0]
+            max_val = values[-1]
+
+            def percentile(p: float) -> float:
+                index = (count - 1) * (p / 100)
+                lower = int(index)
+                upper = lower + 1
+                if upper >= count:
+                    return values[-1]
+                return values[lower] + (values[upper] - values[lower]) * (index - lower)
+
+            stats[field] = {
+                'Count': count,
+                'Mean': mean,
+                'Std': std,
+                'Min': min_val,
+                '25%': percentile(25),
+                '50%': percentile(50),
+                '75%': percentile(75),
+                'Max': max_val,
+            }
+
+    return stats
+
+def save_statistics_to_csv(stats: Dict[str, Dict[str, float]], file_path: str):
+    fields_top = list(stats.keys())
+    fields_left = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
+
+    # Préparer les données pour l'écriture dans le CSV
     data_to_write = []
     for field in fields_top:
-        field_key = field.lower().replace(' ', '_')
-        if field_key in stats:
-            row = [field] + [stats[field_key][stat] for stat in fields_left]
-            data_to_write.append(row)
+        row = [field] + [stats[field][stat] for stat in fields_left]
+        data_to_write.append(row)
 
+    # Écrire les données dans un fichier CSV
     with open(file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
+        # Écrire l'en-tête
         writer.writerow(['Field'] + fields_left)
+        # Écrire les données
         writer.writerows(data_to_write)
 
 def describe():
