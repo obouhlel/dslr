@@ -1,29 +1,31 @@
 import sys
 import csv
 from typing import List, Dict
+from utils import load_students_from_csv
 
-def load_students_from_csv(file_path) -> List[Dict[str, any]]:
-    students = []
-    with open(file_path, mode='r', newline='') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            for key in row:
-                if key not in ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']:
-                    row[key] = float(row[key]) if row[key] else None
-            students.append(row)
-    return students
+def calculate_statistics(students: List[Dict[str, any]], features: List[str]) -> Dict[str, Dict[str, float]]:
+    """
+    Calculate statistical measures for given features in a list of student dictionaries.
 
-def calculate_statistics(students: List[Dict[str, any]]) -> Dict[str, Dict[str, float]]:
-    fields = [
-        'Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination',
-        'Muggle Studies', 'Ancient Runes', 'History of Magic', 'Transfiguration',
-        'Potions', 'Care of Magical Creatures', 'Charms', 'Flying'
-    ]
+    Args:
+        students (List[Dict[str, any]]): A list of dictionaries where each dictionary represents a student and contains feature values.
+        features (List[str]): A list of feature names to calculate statistics for.
 
+    Returns:
+        Dict[str, Dict[str, float]]: A dictionary where each key is a feature name and the value is another dictionary containing:
+            - 'Count': The number of non-null values for the feature.
+            - 'Mean': The mean (average) of the feature values.
+            - 'Std': The standard deviation of the feature values.
+            - 'Min': The minimum value of the feature.
+            - '25%': The 25th percentile value of the feature.
+            - '50%': The 50th percentile (median) value of the feature.
+            - '75%': The 75th percentile value of the feature.
+            - 'Max': The maximum value of the feature.
+    """
     stats = {}
 
-    for field in fields:
-        values = [student[field] for student in students if student[field] is not None]
+    for feature in features:
+        values = [student[feature] for student in students if student[feature] is not None]
         if values:
             values.sort()
 
@@ -44,7 +46,7 @@ def calculate_statistics(students: List[Dict[str, any]]) -> Dict[str, Dict[str, 
                     return values[-1]
                 return values[lower] + (values[upper] - values[lower]) * (index - lower)
 
-            stats[field] = {
+            stats[feature] = {
                 'Count': count,
                 'Mean': mean,
                 'Std': std,
@@ -57,19 +59,19 @@ def calculate_statistics(students: List[Dict[str, any]]) -> Dict[str, Dict[str, 
 
     return stats
 
-def save_statistics_to_csv(stats: Dict[str, Dict[str, float]], file_path: str):
-    fields_top = list(stats.keys())
-    fields_left = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
+def save_stats_to_csv(students_stats: Dict[str, Dict[str, float]], features: List[str], output_file: str):
+    col_width = max(len(feature) for feature in features) + 2
 
-    data_to_write = []
-    for field in fields_top:
-        row = [field] + [stats[field][stat] for stat in fields_left]
-        data_to_write.append(row)
-
-    with open(file_path, mode='w', newline='') as file:
+    with open(output_file, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Field'] + fields_left)
-        writer.writerows(data_to_write)
+
+        header = [" "] + features
+        writer.writerow(header)
+
+        stats_keys = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
+        for key in stats_keys:
+            row = [key] + [f"{students_stats[feature][key]:.2f}" for feature in features]
+            writer.writerow(row)
 
 def describe():
     if len(sys.argv) != 2:
@@ -77,8 +79,14 @@ def describe():
         sys.exit(1)
     file_name = sys.argv[1]
     students = load_students_from_csv(file_path=file_name)
-    students_stats = calculate_statistics(students=students)
-    save_statistics_to_csv(students_stats, "describe.csv")
+    features = [
+        'Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination',
+        'Muggle Studies', 'Ancient Runes', 'History of Magic', 'Transfiguration',
+        'Potions', 'Care of Magical Creatures', 'Charms', 'Flying'
+    ]
+    students_stats = calculate_statistics(students=students, features=features)
+    save_stats_to_csv(students_stats=students_stats, features=features, output_file='students_stats.csv')
+
 
 if __name__ == "__main__":
     describe()
