@@ -1,7 +1,9 @@
 import sys
 import csv
 from typing import List, Dict
-from utils import load_students_from_csv
+from utils import load_students_from_csv, magical_courses
+
+stats_keys = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
 
 def calculate_statistics(students: List[Dict[str, any]], features: List[str]) -> Dict[str, Dict[str, float]]:
     """
@@ -68,7 +70,6 @@ def save_stats_to_csv(students_stats: Dict[str, Dict[str, float]], features: Lis
         header = [" "] + features
         writer.writerow(header)
 
-        stats_keys = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
         for key in stats_keys:
             row = [key] + [f"{students_stats[feature][key]:.2f}" for feature in features]
             writer.writerow(row)
@@ -79,14 +80,8 @@ def describe():
         sys.exit(1)
     file_name = sys.argv[1]
     students = load_students_from_csv(file_path=file_name)
-    features = [
-        'Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination',
-        'Muggle Studies', 'Ancient Runes', 'History of Magic', 'Transfiguration',
-        'Potions', 'Care of Magical Creatures', 'Charms', 'Flying'
-    ]
-    students_stats = calculate_statistics(students=students, features=features)
-    save_stats_to_csv(students_stats=students_stats, features=features, output_file='students_stats.csv')
-
+    students_stats = calculate_statistics(students=students, features=magical_courses)
+    save_stats_to_csv(students_stats=students_stats, features=magical_courses, output_file='students_stats.csv')
 
 if __name__ == "__main__":
     describe()
