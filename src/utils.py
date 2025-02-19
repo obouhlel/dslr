@@ -17,6 +17,6 @@ def load_students_from_csv(file_path: str) -> List[Dict[str, any]]:
         for row in reader:
             for key in row:
                 if key not in ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']:
-                    row[key] = float(row[key]) if row[key] else 0.0
+                    row[key] = float(row[key]) if row[key] else None
             students.append(row)
     return students
