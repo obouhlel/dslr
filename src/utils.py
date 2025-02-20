@@ -58,6 +58,11 @@ def ft_min(series):
 
     return min_value if found_valid else float('nan')
 
+def ft_abs(n):
+    if n < 0:
+        n *= -1.0
+    return n
+
 
 def ft_max(series):
     """
@@ -103,6 +108,34 @@ def normalize_dataset(dataset, features):
 
     return normalized
 
+def covariance(x, y) -> float:
+    x_len = len(x)
+    y_len = len(y)
+    if x_len < y_len:
+        n = x_len
+    else:
+        n = y_len
+
+    x_mean = ft_mean(x)
+    y_mean = ft_mean(y)
+    
+    cov = 0.0
+
+    for i in range(n):
+        if is_nan(x[i]) or is_nan(y[i]):
+            continue
+        cov += (x[i] - x_mean) * (y[i] - y_mean)
+    
+    cov /= n
+    return cov
+
+def correlation(x, y) -> float:
+    x_std = ft_std(x)
+    y_std = ft_std(y)
+
+    corr = covariance(x,y) / (x_std * y_std)
+
+    return corr
 
 # Read the dataset_train.csv and return a disctinary of datas
 def load_students_from_csv(file_path: str) -> List[Dict[str, any]]:

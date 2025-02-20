@@ -89,7 +89,6 @@ def print_stats_table(students_stats: Dict[str, Dict[str, float]],
         print("-+-" + "-" * (col_width - 2), end="")
     print("-|")
 
-    stats_keys = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
     for key in stats_keys:
         print(f"{key:<{first_col_width}}", end="")
         for feature in features:
