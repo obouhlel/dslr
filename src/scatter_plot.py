@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def get_correlation(dataset, course_col):
+def get_correlation_matrix(dataset, course_col):
     normalized_dataset = normalize_dataset(dataset, course_col)
 
     n = len(course_col)
@@ -18,6 +18,9 @@ def get_correlation(dataset, course_col):
                 corr_matrix[i, j] = corr_value
                 corr_matrix[j, i] = corr_value
 
+    return corr_matrix
+
+def get_feature_min_max_corr(corr_matrix):
     max_corr = -1
     min_corr = 0.0
     feature1 = None
@@ -44,9 +47,8 @@ def scatter_plot():
     numeric_col = dataset.select_dtypes(include=['float64', 'int64']).columns
     course_col = [num for num in numeric_col if num != 'Index']
 
-    print(course_col)
-
-    (feature1, feature2, feature1_min, feature2_min) = get_correlation(dataset, course_col)
+    corr_matrix = get_correlation_matrix(dataset, course_col)
+    (feature1, feature2, feature1_min, feature2_min) = get_feature_min_max_corr(corr_matrix)
 
     houses = dataset["Hogwarts House"].unique()
     colors = ['red', 'blue', 'yellow', 'green']
