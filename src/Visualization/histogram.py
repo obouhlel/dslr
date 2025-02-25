@@ -86,7 +86,7 @@ def show_histogram() -> None:
     Main function: load data and display histograms comparing
     most and least homogeneous course distributions.
     """
-    dataset = pd.read_csv('../dataset/dataset_train.csv')
+    dataset = pd.read_csv('../../dataset/dataset_train.csv')
     numeric_col = dataset.select_dtypes(include=['float64', 'int64']).columns
     course_col = [num for num in numeric_col if num != 'Index']
     normalized_dataset = normalize_dataset(dataset, course_col)

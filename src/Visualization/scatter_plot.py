@@ -1,4 +1,4 @@
-from utils import correlation, normalize_dataset, ft_abs
+from src.utils import correlation, normalize_dataset, ft_abs
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -97,7 +97,7 @@ def main() -> None:
     Main function: load data, calculate correlations and display comparative plots.
     """
     try:
-        dataset = pd.read_csv("../dataset/dataset_train.csv")
+        dataset = pd.read_csv("../../dataset/dataset_train.csv")
     except BaseException:
         print("Error reading the file")
         return

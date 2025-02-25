@@ -1,7 +1,7 @@
 import sys
 import csv
 from typing import List, Dict
-from utils import load_students_from_csv, magical_courses
+from src.utils import load_students_from_csv
 
 stats_keys = ['Count', 'Mean', 'Std', 'Min', '25%', '50%', '75%', 'Max']
 

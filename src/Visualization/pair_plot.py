@@ -39,7 +39,7 @@ def main() -> None:
     Limits the number of features to 4 for better visibility.
     """
     try:
-        data = pd.read_csv("../dataset/dataset_train.csv")
+        data = pd.read_csv("../../dataset/dataset_train.csv")
     except BaseException:
         print("Error reading the file")
         return
@@ -47,8 +47,8 @@ def main() -> None:
     numeric_features = data.select_dtypes(include=[np.number]).columns.tolist()
     numeric_features = [num for num in numeric_features if num != 'Index']
 
-    if len(numeric_features) > 4:
-        numeric_features = numeric_features[:4]
+    if len(numeric_features) > 6:
+        numeric_features = numeric_features[:6]
 
     create_pair_plot(data, numeric_features)
     plt.suptitle("Pair Plot - Feature Relationships Matrix", y=1.02)

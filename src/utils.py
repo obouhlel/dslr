@@ -1,5 +1,7 @@
 import csv
 from typing import List, Dict, Union, Any
+
+import numpy as np
 import pandas as pd
 
 
@@ -108,6 +110,33 @@ def normalize_dataset(dataset: pd.DataFrame,
 
     return normalized
 
+
+def normalize_features(dataset: pd.DataFrame,
+                      features: List[str]) -> np.ndarray:
+    """
+    Normalise uniquement les features sélectionnées en utilisant z-score.
+    Gère les NaN et retourne un numpy array des features normalisées.
+    """
+    normalized_features = []
+
+    for feature in features:
+        # Garder votre gestion des NaN
+        feature_data = [value for value in dataset[feature] if
+                        not is_nan(value)]
+        mean = ft_mean(feature_data)
+        std = ft_std(feature_data)
+
+        if std == 0:
+            normalized_feature = np.zeros_like(dataset[feature])
+        else:
+            normalized_feature = [
+                (value - mean) / std if not is_nan(value) else float('nan')
+                for value in dataset[feature]
+            ]
+
+        normalized_features.append(normalized_feature)
+
+    return np.array(normalized_features).T
 
 def covariance(x: List[float], y: List[float]) -> float:
     """
