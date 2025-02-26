@@ -1,18 +1,8 @@
 import csv
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Any
 
 import numpy as np
 import pandas as pd
-
-def ft_max_dict(d: Dict[str, float]) -> str:
-    """Retourne la clé avec la valeur maximale dans le dictionnaire."""
-    max_key = None
-    max_value = float('-inf')
-    for key, value in d.items():
-        if value > max_value:
-            max_value = value
-            max_key = key
-    return max_key
 
 def is_nan(value: Any) -> bool:
     """
@@ -76,6 +66,16 @@ def ft_abs(n: float) -> float:
     return -n if n < 0 else n
 
 
+def ft_max_dict(d: Dict[str, float]) -> str:
+    """Retourne la clé avec la valeur maximale dans le dictionnaire."""
+    max_key = None
+    max_value = float('-inf')
+    for key, value in d.items():
+        if value > max_value:
+            max_value = value
+            max_key = key
+    return max_key
+
 def ft_max(series: List[float]) -> float:
     """
     Find maximum value in a numeric series, ignoring NaN values.
@@ -90,6 +90,52 @@ def ft_max(series: List[float]) -> float:
 
     return max_value if found_valid else float('nan')
 
+def add_ones_column(X: np.ndarray) -> np.ndarray:
+    """Add a column of ones to the feature matrix"""
+    return np.hstack([np.ones((X.shape[0], 1)), X])
+
+def my_exp(x: float) -> float:
+    """
+    Calcule une approximation de e^x pour de petites valeurs de x
+    """
+    result = 1.0
+    term = 1.0
+    for i in range(1, 10):
+        term *= x/i
+        result += term
+    return result
+
+def ft_sigmoid(z: np.ndarray) -> np.ndarray:
+    """
+    Calcule la fonction sigmoïde pour des valeurs normalisées
+    transforme notre prediction en probabilite entre 0 et 1
+    """
+    return 1.0 / (1.0 + my_exp(-z))
+
+def ft_clip(value: float, min_val: float, max_val: float) -> float:
+    """
+    Restreint une valeur à l'intervalle [min_val, max_val]
+    Si la valeur est plus petite que min_val, retourne min_val
+    Si la valeur est plus grande que max_val, retourne max_val
+    Sinon retourne la valeur comme elle est
+    """
+    if value < min_val:
+        return min_val
+    if value > max_val:
+        return max_val
+    return value
+
+
+def ft_log(x: float) -> float:
+    """
+    Calcule le logarithme naturel de x en utilisant une série
+    Valable pour x proche de 1 (ce qui est notre cas avec les probabilités)
+    """
+    # Utilisation de la série de Taylor
+    if x <= 0:
+        return float('inf')
+    y = x - 1
+    return y - (y*y)/2 + (y*y*y)/3
 
 def normalize_dataset(dataset: pd.DataFrame,
                       features: List[str]) -> pd.DataFrame:

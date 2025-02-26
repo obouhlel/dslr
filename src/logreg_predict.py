@@ -1,14 +1,9 @@
 import numpy as np
 import pandas as pd
 import os
-from logreg_train import my_exp, add_ones_column
-from utils import normalize_features, ft_mean, ft_max_dict
-from typing import List, Dict
 
-# Fonctions nécessaires
-def ft_sigmoid(z: float) -> float:
-    """Fonction sigmoïde."""
-    return 1.0 / (1.0 + my_exp(-z))
+from utils import normalize_features, ft_mean, ft_max_dict, add_ones_column, ft_sigmoid
+from typing import List, Dict
 
 def predict_house(X: np.ndarray, all_thetas: Dict[str, np.ndarray], houses: List[str]) -> List[str]:
     """
