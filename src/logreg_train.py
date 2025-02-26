@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
+from typing import Dict, List, Tuple
+from logreg_predict import ft_max_dict
+from utils import normalize_features
 
-from src.utils import normalize_features
 
-
-def validate_data(X, y):
+def validate_data(X: np.ndarray, y: np.ndarray) -> bool:
     """Validate input data"""
     if X is None or y is None:
         return False
@@ -16,11 +17,11 @@ def validate_data(X, y):
         return False
     return True
 
-def add_ones_column(X):
+def add_ones_column(X: np.ndarray) -> np.ndarray:
     """Add a column of ones to the feature matrix"""
     return np.hstack([np.ones((X.shape[0], 1)), X])
 
-def my_exp(x):
+def my_exp(x: float) -> float:
     """
     Calcule une approximation de e^x pour de petites valeurs de x
     """
@@ -31,14 +32,14 @@ def my_exp(x):
         result += term
     return result
 
-def ft_sigmoid(z):
+def ft_sigmoid(z: np.ndarray) -> np.ndarray:
     """
     Calcule la fonction sigmoïde pour des valeurs normalisées
     transforme notre prediction en probabilite entre 0 et 1
     """
     return 1.0 / (1.0 + my_exp(-z))
 
-def ft_clip(value, min_val, max_val):
+def ft_clip(value: float, min_val: float, max_val: float) -> float:
     """
     Restreint une valeur à l'intervalle [min_val, max_val]
     Si la valeur est plus petite que min_val, retourne min_val
@@ -52,7 +53,7 @@ def ft_clip(value, min_val, max_val):
     return value
 
 
-def ft_log(x):
+def ft_log(x: float) -> float:
     """
     Calcule le logarithme naturel de x en utilisant une série
     Valable pour x proche de 1 (ce qui est notre cas avec les probabilités)
@@ -64,7 +65,7 @@ def ft_log(x):
     return y - (y*y)/2 + (y*y*y)/3
 
 
-def compute_logistic_cost(y_true, y_pred, m):
+def compute_logistic_cost(y_true: np.ndarray, y_pred: np.ndarray, m: int) -> float:
     """
     Calcule le coût (l'erreur) de nos prédictions en régression logistique.
 
@@ -91,7 +92,7 @@ def compute_logistic_cost(y_true, y_pred, m):
     return total_cost / m  # On fait la moyenne
 
 
-def gradient_descent(X, y, n_iteration, learning_rate=0.01):
+def gradient_descent(X: np.ndarray, y: np.ndarray, n_iteration: int, learning_rate: float = 0.01) -> Tuple[np.ndarray, np.ndarray]:
     """
     Perform gradient descent with matrix operations
     """
@@ -113,18 +114,17 @@ def gradient_descent(X, y, n_iteration, learning_rate=0.01):
 
     return theta, cost_history
 
-def save_parameters(filename, theta):
+def save_parameters(filename: str, theta: np.ndarray) -> None:
     """save parameters theta in filename"""
     try:
-        with open(filename, 'w') as f:
-            f.write(f"{theta}\n")
+        np.savetxt(f"../results/{filename}", theta)
         print(f"Training completed. Parameters saved to {filename}")
     except IOError as e:
         print(f"Error saving to file: {e}")
         raise
 
 
-def calculate_model_accuracy(X, y_true, thetas, houses):
+def calculate_model_accuracy(X: np.ndarray, y_true: np.ndarray, thetas: Dict[str, np.ndarray], houses: List[str]) -> None:
     """
     Calcule la précision du modèle en utilisant tous les classifieurs
 
@@ -150,7 +150,7 @@ def calculate_model_accuracy(X, y_true, thetas, houses):
             probabilities[house] = prob
 
         # Choisir la maison avec la plus haute probabilité
-        predicted_house = max(probabilities, key=probabilities.get)
+        predicted_house = ft_max_dict(probabilities)
         predictions.append(predicted_house)
 
     # Calculer la précision
@@ -168,7 +168,7 @@ def calculate_model_accuracy(X, y_true, thetas, houses):
         print(f"Précision pour {house}: {house_accuracy * 100:.2f}%")
 
 
-def train_model():
+def train_model() -> None:
     dataset = pd.read_csv('../dataset/dataset_train.csv')
     features = ['Astronomy', 'Herbology', 'Defense Against the Dark Arts',
                 'Ancient Runes']
