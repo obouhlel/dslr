@@ -62,7 +62,7 @@ def predict():
         'Hogwarts House': predictions
     })
     results.to_csv('../results/houses.csv', index=False)
-    print("Prédictions sauvegardées dans 'houses.csv'.")
+    print("Prédictions sauvegardées dans 'results/houses.csv'.")
 
 if __name__ == "__main__":
     predict()
