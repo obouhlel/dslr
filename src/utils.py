@@ -4,6 +4,15 @@ from typing import List, Dict, Union, Any
 import numpy as np
 import pandas as pd
 
+def ft_max_dict(d: Dict[str, float]) -> str:
+    """Retourne la clé avec la valeur maximale dans le dictionnaire."""
+    max_key = None
+    max_value = float('-inf')
+    for key, value in d.items():
+        if value > max_value:
+            max_value = value
+            max_key = key
+    return max_key
 
 def is_nan(value: Any) -> bool:
     """

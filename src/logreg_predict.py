@@ -1,25 +1,14 @@
 import numpy as np
 import pandas as pd
 import os
-from logreg_train import ft_clip, my_exp, add_ones_column
-from utils import normalize_features, ft_mean
+from logreg_train import my_exp, add_ones_column
+from utils import normalize_features, ft_mean, ft_max_dict
 from typing import List, Dict
 
 # Fonctions nécessaires
 def ft_sigmoid(z: float) -> float:
     """Fonction sigmoïde."""
-    z = ft_clip(z, -500, 500)
     return 1.0 / (1.0 + my_exp(-z))
-
-def ft_max_dict(d: Dict[str, float]) -> str:
-    """Retourne la clé avec la valeur maximale dans le dictionnaire."""
-    max_key = None
-    max_value = float('-inf')
-    for key, value in d.items():
-        if value > max_value:
-            max_value = value
-            max_key = key
-    return max_key
 
 def predict_house(X: np.ndarray, all_thetas: Dict[str, np.ndarray], houses: List[str]) -> List[str]:
     """
@@ -43,10 +32,11 @@ def predict_house(X: np.ndarray, all_thetas: Dict[str, np.ndarray], houses: List
 
 def clean_nan_by_mean(dataset: pd.DataFrame, features: List[str]) -> pd.DataFrame:
     """Remplace les NaN par la moyenne de la colonne pour les features données."""
+    dataset_copy = dataset.copy()
     for feature in features:
-        mean_value = ft_mean(dataset[feature].dropna().values)
-        dataset[feature].fillna(mean_value, inplace=True)
-    return dataset
+        mean_value = ft_mean(dataset_copy[feature].dropna().values)
+        dataset_copy[feature] = dataset_copy[feature].fillna(mean_value)
+    return dataset_copy
 
 def predict():
     dataset = pd.read_csv('../dataset/dataset_test.csv')
@@ -59,11 +49,11 @@ def predict():
 
     all_thetas = {}
     for house in houses:
-        model_path = f'../results/model_params_{house}.txt'
-        if os.path.exists(model_path):
-            all_thetas[house] = np.loadtxt(model_path)
+        params = f'../results/model_params_{house}.txt'
+        if os.path.exists(params):
+            all_thetas[house] = np.loadtxt(params)
         else:
-            raise FileNotFoundError(f"Model parameters file for {house} not found at {model_path}")
+            raise FileNotFoundError(f"Model parameters file for {house} not found at {params}")
 
     predictions = predict_house(X_norm, all_thetas, houses)
     

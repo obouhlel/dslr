@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple
-from logreg_predict import ft_max_dict
-from utils import normalize_features
+from utils import normalize_features, ft_max_dict
 
 
 def validate_data(X: np.ndarray, y: np.ndarray) -> bool:
@@ -168,7 +167,7 @@ def calculate_model_accuracy(X: np.ndarray, y_true: np.ndarray, thetas: Dict[str
         print(f"Précision pour {house}: {house_accuracy * 100:.2f}%")
 
 
-def train_model() -> None:
+def train_model():
     dataset = pd.read_csv('../dataset/dataset_train.csv')
     features = ['Astronomy', 'Herbology', 'Defense Against the Dark Arts',
                 'Ancient Runes']
