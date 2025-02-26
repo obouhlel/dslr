@@ -124,16 +124,16 @@ def train_model():
                 'Ancient Runes']
     houses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff']
 
-    clean_dataset = dataset.dropna(subset=features + ['Hogwarts House'])
+    # clean_dataset = dataset.dropna(subset=features + ['Hogwarts House'])
 
     all_thetas = {}
 
-    X_norm = normalize_features(clean_dataset, features)
+    X_norm = normalize_features(dataset, features)
     X_norm = add_ones_column(X_norm)
 
     for house in houses:
         print(f"\nTraining model for {house}...")
-        y = (clean_dataset['Hogwarts House'] == house).astype(
+        y = (dataset['Hogwarts House'] == house).astype(
             int).to_numpy().reshape(-1, 1)
 
         theta, cost_history = gradient_descent(X_norm, y, 500)
@@ -143,7 +143,7 @@ def train_model():
 
     # Évaluer le modèle
     print("\nÉvaluation du modèle:")
-    calculate_model_accuracy(X_norm, clean_dataset['Hogwarts House'].values,
+    calculate_model_accuracy(X_norm, dataset['Hogwarts House'].values,
                              all_thetas, houses)
 
 if __name__ == "__main__":

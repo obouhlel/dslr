@@ -38,8 +38,8 @@ def predict():
     features = ['Astronomy', 'Herbology', 'Defense Against the Dark Arts',
                 'Ancient Runes']
     houses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff']
-    clean_dataset = clean_nan_by_mean(dataset, features)
-    X_norm = normalize_features(clean_dataset, features)
+
+    X_norm = normalize_features(dataset, features)
     X_norm = add_ones_column(X_norm)
 
     all_thetas = {}

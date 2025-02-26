@@ -10,7 +10,6 @@ def is_nan(value: Any) -> bool:
     """
     return value != value
 
-
 def ft_mean(series: List[float]) -> float:
     """
     Calculate mean of a numeric series, ignoring NaN values.
@@ -165,30 +164,26 @@ def normalize_dataset(dataset: pd.DataFrame,
 
     return normalized
 
-
-def normalize_features(dataset: pd.DataFrame,
-                      features: List[str]) -> np.ndarray:
+def normalize_features(dataset: pd.DataFrame, features: List[str]) -> np.ndarray:
     """
-    Normalise uniquement les features sélectionnées en utilisant z-score.
-    Gère les NaN et retourne un numpy array des features normalisées.
+    Normalise uniquement les features sélectionnées en utilisant le z-score.
+    Remplace les NaN par la moyenne de la feature après normalisation.
+    Retourne un numpy array des features normalisées.
     """
     normalized_features = []
 
     for feature in features:
-        # Garder votre gestion des NaN
-        feature_data = [value for value in dataset[feature] if
-                        not is_nan(value)]
+        feature_data = dataset[feature].values
+
         mean = ft_mean(feature_data)
         std = ft_std(feature_data)
 
         if std == 0:
-            normalized_feature = np.zeros_like(dataset[feature])
+            normalized_feature = np.zeros_like(feature_data)
         else:
-            normalized_feature = [
-                (value - mean) / std if not is_nan(value) else float('nan')
-                for value in dataset[feature]
-            ]
+            normalized_feature = (feature_data - mean) / std
 
+        normalized_feature[is_nan(normalized_feature)] = 0
         normalized_features.append(normalized_feature)
 
     return np.array(normalized_features).T
