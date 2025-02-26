@@ -124,8 +124,6 @@ def train_model():
                 'Ancient Runes']
     houses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff']
 
-    # clean_dataset = dataset.dropna(subset=features + ['Hogwarts House'])
-
     all_thetas = {}
 
     X_norm = normalize_features(dataset, features)
